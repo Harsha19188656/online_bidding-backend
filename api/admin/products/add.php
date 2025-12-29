@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require __DIR__ . '/../../db.php';
+require __DIR__ . '/../../../db.php';
 require __DIR__ . '/helper_auth.php';
 
 if ($mysqli->connect_errno) {

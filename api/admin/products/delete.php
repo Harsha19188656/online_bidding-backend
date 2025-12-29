@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require __DIR__ . '/../../db.php';
+require __DIR__ . '/../../../db.php';
 require __DIR__ . '/helper_auth.php';
 
 if ($mysqli->connect_errno) {
@@ -53,7 +53,26 @@ if (!$product_id) {
     exit;
 }
 
-// Delete product (cascade will delete auction and bids)
+// Delete related records first (bids, then auctions, then product)
+// This ensures proper deletion even if foreign key constraints exist
+
+// 1. Delete bids associated with auctions for this product
+$delete_bids = $mysqli->prepare("DELETE b FROM bids b INNER JOIN auctions a ON b.auction_id = a.id WHERE a.product_id = ?");
+if ($delete_bids) {
+    $delete_bids->bind_param("i", $product_id);
+    $delete_bids->execute();
+    $delete_bids->close();
+}
+
+// 2. Delete auctions for this product
+$delete_auctions = $mysqli->prepare("DELETE FROM auctions WHERE product_id = ?");
+if ($delete_auctions) {
+    $delete_auctions->bind_param("i", $product_id);
+    $delete_auctions->execute();
+    $delete_auctions->close();
+}
+
+// 3. Delete the product
 $stmt = $mysqli->prepare("DELETE FROM products WHERE id = ?");
 $stmt->bind_param("i", $product_id);
 

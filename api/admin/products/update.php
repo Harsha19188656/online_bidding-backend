@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require __DIR__ . '/../../db.php';
+require __DIR__ . '/../../../db.php';
 require __DIR__ . '/helper_auth.php';
 
 if ($mysqli->connect_errno) {
